@@ -17,6 +17,7 @@ func BuildTemplates() *TemplateRepository {
 	return tr
 }
 
+// a thin wrapper around template.Template
 type TemplateRepository struct {
 	templateCache *template.Template
 }
