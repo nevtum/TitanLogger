@@ -11,7 +11,9 @@ import (
 func main() {
 	log.Println("Spinning up TitanLogger instance on port 5000")
 
-	tr := templates.BuildTemplates()
+	tr := templates.BuildTemplates(func() {
+		log.Println("templates updated!!!")
+	})
 	configuration.ConfigureRoutes(tr)
 	go listenTemplateChanges(tr)
 
@@ -20,10 +22,6 @@ func main() {
 
 func listenTemplateChanges(tr *templates.TemplateRepository) {
 	for range time.Tick(1000 * time.Millisecond) {
-		isUpdated := tr.ConfigureTemplates()
-
-		if isUpdated {
-			// configuration.ConfigureRoutes(tc)
-		}
+		tr.ConfigureTemplates()
 	}
 }
