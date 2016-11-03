@@ -1,8 +1,8 @@
 package configuration
 
 import (
-	"context"
 	"net/http"
+	"titanlogger/logging"
 	"titanlogger/templates"
 )
 
@@ -18,7 +18,7 @@ func ConfigureRoutes(templateCache *templates.TemplateRepository) {
 func configureApiRoutes() {
 	http.HandleFunc("/api/logs", func(w http.ResponseWriter, r *http.Request) {
 		if r.Method == "POST" {
-			go createNewLog(r.Context())
+			go logging.NewLogEntry(r.Context())
 			w.WriteHeader(http.StatusAccepted)
 			return
 		}
@@ -40,7 +40,4 @@ func configureViewRoutes(templateCache *templates.TemplateRepository) {
 		t := templateCache.Lookup("logs.html")
 		t.Execute(w, nil) // to pass ajax call data as context
 	})
-}
-
-func createNewLog(context context.Context) {
 }
