@@ -49,4 +49,10 @@ func NewLogEntry(context context.Context) {
 
 	logEntry := Debug("TestApplication v0.1", "Some random message")
 	log.Println(logEntry)
+
+	logEntry = Warn("TestApplication v0.1", "Warning, getting hot!")
+	log.Println(logEntry)
+
+	logEntry = Error("TestApplication v0.1", "App has blown up!")
+	log.Println(logEntry)
 }
