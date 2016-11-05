@@ -47,6 +47,9 @@ func Info(application string, message string) LogEntry {
 
 func NewLogEntry(context context.Context) {
 
+	// get type of body from request object
+	// and save to the database
+
 	logEntry := Debug("TestApplication v0.1", "Some random message")
 	log.Println(logEntry)
 
