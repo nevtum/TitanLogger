@@ -18,7 +18,7 @@ func ConfigureRoutes(templateCache *templates.TemplateRepository) {
 func configureApiRoutes() {
 	http.HandleFunc("/api/logs", func(w http.ResponseWriter, r *http.Request) {
 		if r.Method == "POST" {
-			go logging.NewLogEntry(r.Context())
+			go logging.NewLogEntry(r.Form)
 			w.WriteHeader(http.StatusAccepted)
 			return
 		}
