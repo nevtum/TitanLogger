@@ -3,6 +3,7 @@ package configuration
 import (
 	"encoding/json"
 	"net/http"
+	"time"
 	"titanlogger/logging"
 	"titanlogger/templates"
 )
@@ -42,7 +43,13 @@ func configureApiRoutes() {
 func handleReadLogs(w http.ResponseWriter, r *http.Request) {
 	w.Header().Add("Content-Type", "application/json")
 	w.WriteHeader(http.StatusOK)
-	w.Write([]byte("Show logs!"))
+	bytes, err := json.Marshal(fakeLogArray)
+
+	if err != nil {
+		return
+	}
+
+	w.Write(bytes)
 }
 
 func handleWriteLogs(w http.ResponseWriter, r *http.Request) {
@@ -56,4 +63,25 @@ func handleWriteLogs(w http.ResponseWriter, r *http.Request) {
 
 	go logging.NewLogEntry(dto)
 	w.WriteHeader(http.StatusAccepted)
+}
+
+var fakeLogArray = []logging.LogDTO{
+	logging.LogDTO{
+		DateOccurred: time.Now().UTC(),
+		Message:      "A debug message",
+		Application:  "App v0.2.3",
+		Level:        "debug",
+	},
+	logging.LogDTO{
+		DateOccurred: time.Now().UTC(),
+		Message:      "An error message",
+		Application:  "App v0.5.3",
+		Level:        "error",
+	},
+	logging.LogDTO{
+		DateOccurred: time.Now().UTC(),
+		Message:      "A warning message",
+		Application:  "TestApplication v1.7.5",
+		Level:        "warn",
+	},
 }
