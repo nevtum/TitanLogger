@@ -6,32 +6,34 @@ import (
 	"time"
 	"titanlogger/logging"
 	"titanlogger/templates"
+
+	"github.com/gorilla/mux"
 )
 
-func ConfigureRoutes(templateCache *templates.TemplateRepository) {
+func ConfigureRoutes(router *mux.Router, templateCache *templates.TemplateRepository) {
 
-	configureViewRoutes(templateCache)
-	configureApiRoutes()
+	configureViewRoutes(router, templateCache)
+	configureApiRoutes(router)
 
 	handler := http.FileServer(http.Dir("."))
 	http.Handle("/static", handler)
 }
 
-func configureViewRoutes(templateCache *templates.TemplateRepository) {
+func configureViewRoutes(router *mux.Router, templateCache *templates.TemplateRepository) {
 
-	http.HandleFunc("/", func(w http.ResponseWriter, r *http.Request) {
+	router.HandleFunc("/", func(w http.ResponseWriter, r *http.Request) {
 		t := templateCache.Lookup("home.html")
 		t.Execute(w, nil)
 	})
 
-	http.HandleFunc("/logs", func(w http.ResponseWriter, r *http.Request) {
+	router.HandleFunc("/logs", func(w http.ResponseWriter, r *http.Request) {
 		t := templateCache.Lookup("logs.html")
 		t.Execute(w, nil)
 	})
 }
 
-func configureApiRoutes() {
-	http.HandleFunc("/api/logs", func(w http.ResponseWriter, r *http.Request) {
+func configureApiRoutes(router *mux.Router) {
+	router.HandleFunc("/api/logs", func(w http.ResponseWriter, r *http.Request) {
 		if r.Method == "POST" {
 			handleWriteLogs(w, r)
 		} else {

@@ -6,6 +6,8 @@ import (
 	"time"
 	"titanlogger/configuration"
 	"titanlogger/templates"
+
+	"github.com/gorilla/mux"
 )
 
 func main() {
@@ -14,10 +16,13 @@ func main() {
 	tr := templates.BuildTemplates(func() {
 		// log.Println("templates updated!!!")
 	})
-	configuration.ConfigureRoutes(tr)
+
+	router := mux.NewRouter().StrictSlash(true)
+
+	configuration.ConfigureRoutes(router, tr)
 	go listenTemplateChanges(tr)
 
-	log.Fatal(http.ListenAndServe(":5000", nil))
+	log.Fatal(http.ListenAndServe(":5000", router))
 }
 
 func listenTemplateChanges(tr *templates.TemplateRepository) {
