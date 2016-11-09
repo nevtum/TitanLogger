@@ -12,12 +12,12 @@ func main() {
 	log.Println("Spinning up TitanLogger instance on port 5000")
 
 	tr := templates.BuildTemplates(func() {
-		log.Println("templates updated!!!")
+		// log.Println("templates updated!!!")
 	})
 	configuration.ConfigureRoutes(tr)
 	go listenTemplateChanges(tr)
 
-	http.ListenAndServe(":5000", nil)
+	log.Fatal(http.ListenAndServe(":5000", nil))
 }
 
 func listenTemplateChanges(tr *templates.TemplateRepository) {

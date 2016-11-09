@@ -1,6 +1,7 @@
 package configuration
 
 import (
+	"encoding/json"
 	"net/http"
 	"titanlogger/logging"
 	"titanlogger/templates"
@@ -8,24 +9,11 @@ import (
 
 func ConfigureRoutes(templateCache *templates.TemplateRepository) {
 
-	configureApiRoutes()
 	configureViewRoutes(templateCache)
+	configureApiRoutes()
 
 	handler := http.FileServer(http.Dir("."))
 	http.Handle("/static", handler)
-}
-
-func configureApiRoutes() {
-	http.HandleFunc("/api/logs", func(w http.ResponseWriter, r *http.Request) {
-		if r.Method == "POST" {
-			go logging.NewLogEntry(r.Form)
-			w.WriteHeader(http.StatusAccepted)
-			return
-		}
-		w.Header().Add("Content-Type", "application/json")
-		w.WriteHeader(http.StatusOK)
-		w.Write([]byte("Show logs!"))
-	})
 }
 
 func configureViewRoutes(templateCache *templates.TemplateRepository) {
@@ -33,11 +21,39 @@ func configureViewRoutes(templateCache *templates.TemplateRepository) {
 	http.HandleFunc("/", func(w http.ResponseWriter, r *http.Request) {
 		t := templateCache.Lookup("home.html")
 		t.Execute(w, nil)
-		// http.Redirect(w, r, "/logs", http.StatusSeeOther)
 	})
 
 	http.HandleFunc("/logs", func(w http.ResponseWriter, r *http.Request) {
 		t := templateCache.Lookup("logs.html")
-		t.Execute(w, nil) // to pass ajax call data as context
+		t.Execute(w, nil)
 	})
+}
+
+func configureApiRoutes() {
+	http.HandleFunc("/api/logs", func(w http.ResponseWriter, r *http.Request) {
+		if r.Method == "POST" {
+			handleWriteLogs(w, r)
+		} else {
+			handleReadLogs(w, r)
+		}
+	})
+}
+
+func handleReadLogs(w http.ResponseWriter, r *http.Request) {
+	w.Header().Add("Content-Type", "application/json")
+	w.WriteHeader(http.StatusOK)
+	w.Write([]byte("Show logs!"))
+}
+
+func handleWriteLogs(w http.ResponseWriter, r *http.Request) {
+	var dto logging.LogDTO
+	err := json.NewDecoder(r.Body).Decode(&dto)
+
+	if err != nil {
+		http.Error(w, err.Error(), http.StatusBadRequest)
+		return
+	}
+
+	go logging.NewLogEntry(dto)
+	w.WriteHeader(http.StatusAccepted)
 }
