@@ -33,13 +33,9 @@ func configureViewRoutes(router *mux.Router, templateCache *templates.TemplateRe
 }
 
 func configureApiRoutes(router *mux.Router) {
-	router.HandleFunc("/api/logs", func(w http.ResponseWriter, r *http.Request) {
-		if r.Method == "POST" {
-			handleWriteLogs(w, r)
-		} else {
-			handleReadLogs(w, r)
-		}
-	})
+
+	router.HandleFunc("/api/logs", handleWriteLogs).Methods("POST")
+	router.HandleFunc("/api/logs", handleReadLogs).Methods("GET")
 
 	router.HandleFunc("/api/logs/{logId}", func(w http.ResponseWriter, r *http.Request) {
 		w.Header().Add("Content-Type", "application/json")
@@ -51,7 +47,7 @@ func configureApiRoutes(router *mux.Router) {
 		}
 
 		w.Write(bytes)
-	})
+	}).Methods("GET")
 }
 
 func handleReadLogs(w http.ResponseWriter, r *http.Request) {
