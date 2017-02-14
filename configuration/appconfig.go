@@ -39,26 +39,26 @@ func configureApiRoutes(router *mux.Router) {
 
 	router.HandleFunc("/api/logs/{logId}", func(w http.ResponseWriter, r *http.Request) {
 		w.Header().Add("Content-Type", "application/json")
-		w.WriteHeader(http.StatusOK)
 		bytes, err := json.Marshal(fakeLogArray[0])
 
 		if err != nil {
 			return
 		}
 
+		w.WriteHeader(http.StatusOK)
 		w.Write(bytes)
 	}).Methods("GET")
 }
 
 func handleReadLogs(w http.ResponseWriter, r *http.Request) {
 	w.Header().Add("Content-Type", "application/json")
-	w.WriteHeader(http.StatusOK)
 	bytes, err := json.Marshal(fakeLogArray)
 
 	if err != nil {
 		return
 	}
 
+	w.WriteHeader(http.StatusOK)
 	w.Write(bytes)
 }
 
