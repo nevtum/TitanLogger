@@ -71,7 +71,13 @@ func handleWriteLogs(w http.ResponseWriter, r *http.Request) {
 		return
 	}
 
-	go logging.NewLogEntry(dto)
+	err = logging.NewLogEntry(dto)
+
+	if err != nil {
+		http.Error(w, err.Error(), http.StatusInternalServerError)
+		return
+	}
+
 	w.WriteHeader(http.StatusAccepted)
 }
 

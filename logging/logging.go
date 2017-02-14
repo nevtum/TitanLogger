@@ -1,6 +1,7 @@
 package logging
 
 import (
+	"errors"
 	"log"
 	"time"
 )
@@ -67,21 +68,18 @@ func createLogEntry(logType string, application string, message string, dateOccu
 	}, nil
 }
 
-func NewLogEntry(dto LogDTO) {
+func NewLogEntry(dto LogDTO) error {
 
 	if len(dto.Application) == 0 {
-		log.Println("Application field is empty")
-		return
+		return errors.New("Application field is empty")
 	}
 
 	if len(dto.Message) == 0 {
-		log.Println("Message field is empty")
-		return
+		return errors.New("Message field is empty")
 	}
 
 	if len(dto.Level) == 0 {
-		log.Println("Level field is empty")
-		return
+		return errors.New("Level field is empty")
 	}
 
 	var logEntry LogEntry
@@ -100,11 +98,12 @@ func NewLogEntry(dto LogDTO) {
 		logEntry = Info(dto.Application, dto.Message, dto.DateOccurred)
 		break
 	default:
-		log.Println("Unknown log type!")
-		return
+		return errors.New("Unknown log type!")
 	}
 
 	log.Println(logEntry)
 
 	// save to database
+
+	return nil
 }
